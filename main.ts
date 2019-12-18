@@ -62,14 +62,14 @@ namespace SIM7020E {
                         if (modem.sendAT('+CFUN=1')) {
                             basic.pause(100)
                             if (modem.expectOK('+COPS=1,2,"26201"')) {
-                                return 'Connected';
+                                return 'CONNECTED';
                             }
                         }
                     }
                 }
             }
         }
-        return 'Error';
+        return 'ERROR';
     }
 
     /*
@@ -89,7 +89,7 @@ namespace SIM7020E {
             }
             return contents
         }
-        return ""
+        return "ERROR"
     }
 
     /*
@@ -109,7 +109,7 @@ namespace SIM7020E {
             }
             return contents
         }
-        return ""
+        return "ERROR"
     }
 
     /*
@@ -130,7 +130,7 @@ namespace SIM7020E {
             }
             return contents
         }
-        return ""
+        return "ERROR"
     }
 
     /*
@@ -150,7 +150,7 @@ namespace SIM7020E {
             }
             return contents
         }
-        return ""
+        return "ERROR"
     }
 
     /*
@@ -171,7 +171,7 @@ namespace SIM7020E {
             }
             return contents
         }
-        return ""
+        return "ERROR"
     }
 
     /*
@@ -191,7 +191,7 @@ namespace SIM7020E {
             }
             return contents
         }
-        return ""
+        return "ERROR"
     }
 
     /*
@@ -212,7 +212,7 @@ namespace SIM7020E {
             }
             return contents
         }
-        return ""
+        return "ERROR"
     }
 
     /*
@@ -232,7 +232,7 @@ namespace SIM7020E {
             }
             return contents
         }
-        return ""
+        return "ERROR"
     }
 
     /*
@@ -244,7 +244,7 @@ namespace SIM7020E {
         if (response[response.length - 1] == "OK") {
             let contents = ""
             for (let line = 0; line <= response.length - 1; line++) {
-                contents = contents + '' + response[line]
+                contents = contents + '/' + response[line]
                 if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
                     logUSB('response:', response[line])
                 }
@@ -255,7 +255,7 @@ namespace SIM7020E {
             }
             return contents
         }
-        return ""
+        return "ERROR"
     }
 
     /*
@@ -278,7 +278,7 @@ namespace SIM7020E {
             }
             return contents
         }
-        return ""
+        return "ERROR"
     }
 
     /*
@@ -301,7 +301,7 @@ namespace SIM7020E {
             }
             return contents
         }
-        return ""
+        return "ERROR"
     }
 
     /*
@@ -327,7 +327,7 @@ namespace SIM7020E {
             }
             return contents
         }
-        return ""
+        return "ERROR"
     }
 
     /*
@@ -355,7 +355,7 @@ namespace SIM7020E {
             }
             return contents
         }
-        return ""
+        return "ERROR"
     }
 
     /*
@@ -379,7 +379,7 @@ namespace SIM7020E {
             }
             return contents
         }
-        return ""
+        return "ERROR"
     }
 
     /*
@@ -412,7 +412,7 @@ namespace SIM7020E {
             }
             return contents
         }
-        return ""
+        return "ERROR"
     }
 
     //% block
