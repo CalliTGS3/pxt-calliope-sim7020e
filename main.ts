@@ -15,7 +15,9 @@ enum SIM7020E_AT_DEBUG {
  */
 //% weight=100 color= #3498db icon="\uf382"
 namespace SIM7020E {
-
+    const RESPONSE = 'RESPONSE:'
+    const ERROR = 'ERROR';
+    const OK = 'OK';
     let MODEM_DEBUG = false;
     let AT_DEBUG: SIM7020E_AT_DEBUG = SIM7020E_AT_DEBUG.AT_DEBUG_OFF;
     let TX=0;
@@ -31,7 +33,7 @@ namespace SIM7020E {
     }
 
     /*
-    * Init for calliope
+    * Init Serial
     */
     //% block
     export function initModem(tx: SerialPin, rx: SerialPin, rate: BaudRate) {
@@ -45,31 +47,126 @@ namespace SIM7020E {
         modem.setATPrefix("AT")
         serial.setReceiveBufferSize(1000)
     }
-
+    
     /*
-    * Connect to Deutsche Telekom NB-IOT (BAND: 8, APN: iot.telekom.net, Netzwerk: 26201 )
+    * Connect to NB-IOT
     */
     //% block
-    export function connectTelekomNBIOT(): string {
-        if (modem.expectOK('+GMR')) {
+    export function connectNBIOT(band: number, pdptype:string, apn:string, network:string): string {
+        if (getModemSoftwareRevision() != ERROR) {
             basic.pause(100)
-            if (modem.expectOK('+CBAND=8')) {
+            if (setMobileOperationBand(band) != ERROR) {
                 basic.pause(100)
-                if (modem.sendAT('+CFUN=0')) {
+                if (setPhoneFunctionality(0) != ERROR) {
                     basic.pause(100)
-                    if (modem.expectOK('*MCGDEFCONT="IP","iot.telekom.net"')) {
+                    if (setDefaultPSDConnectionSettings(pdptype, apn) != ERROR) {
                         basic.pause(100)
-                        if (modem.sendAT('+CFUN=1')) {
+                        if (setPhoneFunctionality(1) != ERROR) {
                             basic.pause(100)
-                            if (modem.expectOK('+COPS=1,2,"26201"')) {
-                                return 'OK';
+                            if (registerNetwork(1, 2, network) != ERROR) {
+                                return OK;
                             }
                         }
                     }
                 }
             }
         }
-        return 'ERROR';
+        return ERROR;
+    }
+
+    /*
+    * "AT+CBAND" command set mobile operation band
+    */
+    //% block
+    export function setMobileOperationBand(band : number) {
+        let command = band.toString;
+        let response = modem.sendAT('+CBAND=' +  command)
+        if (response[response.length - 1] == OK) {
+            let return_code = OK
+            if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
+                let return_code = response[response.length - 2]
+            }
+            if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
+                logUSB(RESPONSE, response[response.length - 2])
+            }
+            return return_code
+        }
+        return ERROR
+    }
+
+    /*
+    * "AT+CFUN" command set phone functionality
+    */
+    //% block
+    export function setPhoneFunctionality(fun: number) {
+        let command = fun;
+        let response = modem.sendAT('+CFUN=' + command)
+        if (response[response.length - 1] == OK) {
+            let return_code = OK
+            if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
+                let return_code = response[response.length - 2]
+            }
+            if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
+                logUSB(RESPONSE, response[response.length - 2])
+            }
+            return return_code
+        }
+        return ERROR
+    }
+
+    /*
+    * "AT*MCGDEFCONT" command set default PSD connection settings
+    */
+    //% block
+    export function setDefaultPSDConnectionSettings(pdptype: string, apn:string, username?:string, password?:string) {
+        let command = '"' + pdptype + '"'
+        if (apn) {
+            command = command + ',"' + apn + '"'    
+            if (username) {
+                command = command + ',"' + username + '"'
+                if (password) {
+                    command = command + ',"' + password + '"'
+                }
+            }
+        }
+        let response = modem.sendAT('*MCGDEFCONT=' + command)
+        if (response[response.length - 1] == OK) {
+            let return_code = OK
+            if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
+                let return_code = response[response.length - 2]
+            }
+            if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
+                logUSB(RESPONSE, response[response.length - 2])
+            }
+            return return_code
+        }
+        return ERROR
+    }
+
+    /*
+    * "AT+COPS" command register network
+    */
+    //% block
+    export function registerNetwork(mode: number, format: number, network: string) {
+        let command = mode.toString()
+        if (format) {
+            command = command + ',' + format
+            if (network) {
+                command = command + ',"' + network + '"'
+            }
+        }
+        let response = modem.sendAT('+COPS=' + command)
+        if (response[response.length - 1] == OK) {
+            let return_code = OK
+            if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
+                let return_code = response[response.length - 2]
+            }
+            if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
+                logUSB(RESPONSE, response[response.length - 2])
+            }
+            return return_code
+        }
+        return ERROR
     }
 
     /*
@@ -78,17 +175,17 @@ namespace SIM7020E {
     //% block
     export function getModemSoftwareRevision() {
         let response = modem.sendAT('+GMR')
-        if (response[response.length - 1] == "OK") {
-            let return_code = 'OK'
+        if (response[response.length - 1] == OK) {
+            let return_code = OK
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
                 let return_code = response[response.length - 2]
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
-                logUSB('response:', response[response.length - 2])
+                logUSB(RESPONSE, response[response.length - 2])
             }
             return return_code
         }
-        return "ERROR"
+        return ERROR
     }
 
     /*
@@ -97,17 +194,17 @@ namespace SIM7020E {
     //% block
     export function getIMSI() {
         let response = modem.sendAT('+CIMI')
-        if (response[response.length - 1] == "OK") {
-            let return_code = 'OK'
+        if (response[response.length - 1] == OK) {
+            let return_code = OK
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
                 let return_code = response[response.length - 2]
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
-                logUSB('response:', response[response.length - 2])
+                logUSB(RESPONSE, response[response.length - 2])
             }
             return return_code
         }
-        return "ERROR"
+        return ERROR
     }
 
     /*
@@ -117,17 +214,17 @@ namespace SIM7020E {
     //% block
     export function getIMEI() {
         let response = modem.sendAT('+GSN')
-        if (response[response.length - 1] == "OK") {
-            let return_code = 'OK'
+        if (response[response.length - 1] == OK) {
+            let return_code = OK
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
                 let return_code = response[response.length - 2]
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
-                logUSB('response:', response[response.length - 2])
+                logUSB(RESPONSE, response[response.length - 2])
             }
             return return_code
         }
-        return "ERROR"
+        return ERROR
     }
 
     /*
@@ -136,17 +233,17 @@ namespace SIM7020E {
     //% block
     export function getCCID() {
         let response = modem.sendAT('+CCID')
-        if (response[response.length - 1] == "OK") {
-            let return_code = 'OK'
+        if (response[response.length - 1] == OK) {
+            let return_code = OK
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
                 let return_code = response[response.length - 2]
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
-                logUSB('response:', response[response.length - 2])
+                logUSB(RESPONSE, response[response.length - 2])
             }
             return return_code
         }
-        return "ERROR"
+        return ERROR
     }
 
     /*
@@ -156,17 +253,17 @@ namespace SIM7020E {
     //% block
     export function getCurrentPDP() {
         let response = modem.sendAT('+CGCONTRDP')
-        if (response[response.length - 1] == "OK") {
-            let return_code = 'OK'
+        if (response[response.length - 1] == OK) {
+            let return_code = OK
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
                 let return_code = response[response.length - 2]
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
-                logUSB('response:', response[response.length - 2])
+                logUSB(RESPONSE, response[response.length - 2])
             }
             return return_code
         }
-        return "ERROR"
+        return ERROR
     }
 
     /*
@@ -175,17 +272,17 @@ namespace SIM7020E {
     //% block
     export function getRFSignalQuality() {
         let response = modem.sendAT('+CSQ')
-        if (response[response.length - 1] == "OK") {
-            let return_code = 'OK'
+        if (response[response.length - 1] == OK) {
+            let return_code = OK
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
                 let return_code = response[response.length - 2]
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
-                logUSB('response:', response[response.length - 2])
+                logUSB(RESPONSE, response[response.length - 2])
             }
             return return_code
         }
-        return "ERROR"
+        return ERROR
     }
 
     /*
@@ -195,17 +292,17 @@ namespace SIM7020E {
     //% block
     export function getCurrentOperator() {
         let response = modem.sendAT('+COPS?')
-        if (response[response.length - 1] == "OK") {
-            let return_code = 'OK'
+        if (response[response.length - 1] == OK) {
+            let return_code = OK
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
                 let return_code = response[response.length - 2]
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
-                logUSB('response:', response[response.length - 2])
+                logUSB(RESPONSE, response[response.length - 2])
             }
             return return_code
         }
-        return "ERROR"
+        return ERROR
     }
 
     /*
@@ -214,17 +311,17 @@ namespace SIM7020E {
     //% block
     export function getPDPContext() {
         let response = modem.sendAT('+CGACT?')
-        if (response[response.length - 1] == "OK") {
-            let return_code = 'OK'
+        if (response[response.length - 1] == OK) {
+            let return_code = OK
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
                 let return_code = response[response.length - 2]
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
-                logUSB('response:', response[response.length - 2])
+                logUSB(RESPONSE, response[response.length - 2])
             }
             return return_code
         }
-        return "ERROR"
+        return ERROR
     }
 
     /*
@@ -233,13 +330,13 @@ namespace SIM7020E {
     //% block
     export function getPDPAddress() {
         let response = modem.sendAT('+IPCONFIG')
-        if (response[response.length - 1] == "OK") {
-            let return_code = 'OK'
+        if (response[response.length - 1] == OK) {
+            let return_code = OK
             let contents = ''
             for (let line = 0; line <= response.length - 1; line++) {
                 contents = contents + '/' + response[line]
                 if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
-                    logUSB('response:', response[line])
+                    logUSB(RESPONSE, response[line])
                 }
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
@@ -247,7 +344,7 @@ namespace SIM7020E {
             }
             return return_code
         }
-        return "ERROR"
+        return ERROR
     }
 
     /*
@@ -256,13 +353,13 @@ namespace SIM7020E {
     //% block
     export function getMQTTConnections() {
         let response = modem.sendAT('+CMQCON?')
-        if (response[response.length - 1] == "OK") {
-            let return_code = 'OK'
+        if (response[response.length - 1] == OK) {
+            let return_code = OK
             let contents = ''
             for (let line = 0; line <= response.length - 1; line++) {
                 contents = contents + '/' + response[line]
                 if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
-                    logUSB('response:', response[line])
+                    logUSB(RESPONSE, response[line])
                 }
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
@@ -270,7 +367,7 @@ namespace SIM7020E {
             }
             return return_code
         }
-        return "ERROR"
+        return ERROR
     }
 
     /*
@@ -279,13 +376,13 @@ namespace SIM7020E {
     //% block
     export function getMQTTInstances() {
         let response = modem.sendAT('+CMQNEW?')
-        if (response[response.length - 1] == "OK") {
-            let return_code = 'OK'
+        if (response[response.length - 1] == OK) {
+            let return_code = OK
             let contents = ''
             for (let line = 0; line <= response.length - 1; line++) {
                 contents = contents + '/' + response[line]
                 if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
-                    logUSB('response:', response[line])
+                    logUSB(RESPONSE, response[line])
                 }
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
@@ -293,7 +390,7 @@ namespace SIM7020E {
             }
             return return_code
         }
-        return "ERROR"
+        return ERROR
     }
 
     /*
@@ -305,13 +402,13 @@ namespace SIM7020E {
         let bufsize = 1024
         let command = '"' + server + '",' + port + ',' + timeout + ',' + bufsize
         let response = modem.sendAT("+CMQNEW=" + command)
-        if (response[response.length - 1] == "OK") {
-            let return_code = 'OK'
+        if (response[response.length - 1] == OK) {
+            let return_code = OK
             let contents = ''
             for (let line = 0; line <= response.length - 1; line++) {
                 contents = contents + '/' + response[line]
                 if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
-                    logUSB('response:', response[line])
+                    logUSB(RESPONSE, response[line])
                 }
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
@@ -319,7 +416,7 @@ namespace SIM7020E {
             }
             return return_code
         }
-        return "ERROR"
+        return ERROR
     }
 
     /*
@@ -333,13 +430,13 @@ namespace SIM7020E {
         let mqtt_will_flag = 0
         let command = mqtt_id + ',' + mqtt_version + ',"' + client_id + '",' + mqtt_keepalive + ',' + mqtt_cleansession + ',' + mqtt_will_flag
         let response = modem.sendAT('+CMQCON=' + command)
-        if (response[response.length - 1] == "OK") {
-            let return_code = 'OK'
+        if (response[response.length - 1] == OK) {
+            let return_code = OK
             let contents = ''
             for (let line = 0; line <= response.length - 1; line++) {
                 contents = contents + '/' + response[line]
                 if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
-                    logUSB('response:', response[line])
+                    logUSB(RESPONSE, response[line])
                 }
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
@@ -347,7 +444,7 @@ namespace SIM7020E {
             }
             return return_code
         }
-        return "ERROR"
+        return ERROR
     }
 
     /*
@@ -357,13 +454,13 @@ namespace SIM7020E {
     export function disconnectMQTT(mqtt_id: number) {
         let command = mqtt_id
         let response = modem.sendAT('+CMQDISCON=' + command)
-        if (response[response.length - 1] == "OK") {
-            let return_code = 'OK'
+        if (response[response.length - 1] == OK) {
+            let return_code = OK
             let contents = ''
             for (let line = 0; line <= response.length - 1; line++) {
                 contents = contents + '/' + response[line]
                 if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
-                    logUSB('response:', response[line])
+                    logUSB(RESPONSE, response[line])
                 }
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
@@ -371,7 +468,7 @@ namespace SIM7020E {
             }
             return return_code
         }
-        return "ERROR"
+        return ERROR
     }
 
     /*
@@ -393,13 +490,13 @@ namespace SIM7020E {
         let topic = "\"channels/" + channel + "/publish/" + write_api_key + "\""
         let command = "" + topic + ",0,0,0," + messagelen + "," + message
         let response = modem.sendAT('+CMQPUB=' + mqtt_id + ',' + command)
-        if (response[response.length - 1] == "OK") {
-            let return_code = 'OK'
+        if (response[response.length - 1] == OK) {
+            let return_code = OK
             let contents = ''
             for (let line = 0; line <= response.length - 1; line++) {
                 contents = contents + '/' + response[line]
                 if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
-                    logUSB('response:', response[line])
+                    logUSB(RESPONSE, response[line])
                 }
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
@@ -407,7 +504,7 @@ namespace SIM7020E {
             }
             return return_code
         }
-        return "ERROR"
+        return ERROR
     }
 
     //% block
