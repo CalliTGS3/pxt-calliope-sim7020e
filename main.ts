@@ -13,7 +13,7 @@ enum SIM7020E_AT_DEBUG {
 /**
  * Benutzerdefinierte Blöcke
  */
-//% weight=102 color= #1a5276 icon="\uf289"
+//% weight=20 color=#0fbc11 icon=""
 namespace SIM7020E {
     const RESPONSE = 'RESPONSE:'
     const ERROR = 'ERROR';
