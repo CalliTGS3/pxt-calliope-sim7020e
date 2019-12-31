@@ -79,7 +79,7 @@ namespace SIM7020E {
     */
     //% block
     export function setMobileOperationBand(band : number) {
-        let command = band.toString;
+        let command = band.toString();
         let response = modem.sendAT('+CBAND=' +  command)
         if (response[response.length - 1] == OK) {
             let return_code = OK
