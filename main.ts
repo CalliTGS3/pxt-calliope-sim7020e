@@ -267,6 +267,25 @@ namespace SIM7020E {
     }
 
     /*
+    * "AT+CGDCONT=?" command reports sopported PDP's 
+    */
+    //% block
+    export function getSupportedPDP() {
+        let response = modem.sendAT('+CGDCONT=?')
+        if (response[response.length - 1] == OK) {
+            let return_code = OK
+            if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
+                return_code = response[response.length - 2]
+            }
+            if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
+                logUSB(RESPONSE, response[response.length - 2])
+            }
+            return return_code
+        }
+        return ERROR
+    }
+
+    /*
     * "AT+CSQ" command returns received signal strength indication RSSI and channel bit error rate BER from the ME.
     */
     //% block
