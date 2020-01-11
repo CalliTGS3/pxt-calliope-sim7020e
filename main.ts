@@ -508,7 +508,7 @@ namespace SIM7020E {
     }
 
     //% block
-    export function PowerOn(dp: DigitalPin) {
+    export function powerOn(dp: DigitalPin) {
         pins.digitalWritePin(dp, 1)
         basic.pause(2000)
         pins.digitalWritePin(dp, 0)
@@ -518,7 +518,7 @@ namespace SIM7020E {
     }
 
     //% block
-    export function PowerOff(dp: DigitalPin) {
+    export function powerOff(dp: DigitalPin) {
         pins.digitalWritePin(dp, 0)
         basic.pause(3000)
     }
