@@ -63,7 +63,7 @@ namespace SIM7020E {
                         basic.pause(100)
                         if (setPhoneFunctionality(1) != ERROR) {
                             basic.pause(100)
-                            if (registerNetwork(1, 2, network) != ERROR) {
+                            if (registerNetwork(1, 2, network, 9) != ERROR) {
                                 return OK;
                             }
                         }
@@ -147,12 +147,15 @@ namespace SIM7020E {
     * "AT+COPS" command register network
     */
     //% block
-    export function registerNetwork(mode: number, format: number, network: string) {
+    export function registerNetwork(mode: number, format: number, network: string, act?: number) {
         let command = mode.toString()
         if (format) {
             command = command + ',' + format
             if (network) {
                 command = command + ',"' + network + '"'
+                if (act) {
+                    command = command + ',' + act
+                }
             }
         }
         let response = modem.sendAT('+COPS=' + command)
