@@ -84,7 +84,7 @@ namespace SIM7020E {
         if (response[response.length - 1] == OK) {
             let return_code = OK
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
-                let return_code = response[response.length - 2]
+                return_code = response[response.length - 2]
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
                 logUSB(RESPONSE, response[response.length - 2])
@@ -104,7 +104,7 @@ namespace SIM7020E {
         if (response[response.length - 1] == OK) {
             let return_code = OK
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
-                let return_code = response[response.length - 2]
+                return_code = response[response.length - 2]
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
                 logUSB(RESPONSE, response[response.length - 2])
@@ -133,7 +133,7 @@ namespace SIM7020E {
         if (response[response.length - 1] == OK) {
             let return_code = OK
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
-                let return_code = response[response.length - 2]
+                return_code = response[response.length - 2]
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
                 logUSB(RESPONSE, response[response.length - 2])
@@ -159,7 +159,7 @@ namespace SIM7020E {
         if (response[response.length - 1] == OK) {
             let return_code = OK
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
-                let return_code = response[response.length - 2]
+                return_code = response[response.length - 2]
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
                 logUSB(RESPONSE, response[response.length - 2])
@@ -178,7 +178,7 @@ namespace SIM7020E {
         if (response[response.length - 1] == OK) {
             let return_code = OK
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
-                let return_code = response[response.length - 2]
+                return_code = response[response.length - 2]
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
                 logUSB(RESPONSE, response[response.length - 2])
@@ -197,7 +197,7 @@ namespace SIM7020E {
         if (response[response.length - 1] == OK) {
             let return_code = OK
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
-                let return_code = response[response.length - 2]
+                return_code = response[response.length - 2]
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
                 logUSB(RESPONSE, response[response.length - 2])
@@ -217,7 +217,7 @@ namespace SIM7020E {
         if (response[response.length - 1] == OK) {
             let return_code = OK
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
-                let return_code = response[response.length - 2]
+                return_code = response[response.length - 2]
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
                 logUSB(RESPONSE, response[response.length - 2])
@@ -236,7 +236,7 @@ namespace SIM7020E {
         if (response[response.length - 1] == OK) {
             let return_code = OK
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
-                let return_code = response[response.length - 2]
+                return_code = response[response.length - 2]
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
                 logUSB(RESPONSE, response[response.length - 2])
@@ -256,7 +256,7 @@ namespace SIM7020E {
         if (response[response.length - 1] == OK) {
             let return_code = OK
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
-                let return_code = response[response.length - 2]
+                return_code = response[response.length - 2]
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
                 logUSB(RESPONSE, response[response.length - 2])
@@ -275,7 +275,7 @@ namespace SIM7020E {
         if (response[response.length - 1] == OK) {
             let return_code = OK
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
-                let return_code = response[response.length - 2]
+                return_code = response[response.length - 2]
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
                 logUSB(RESPONSE, response[response.length - 2])
@@ -295,7 +295,7 @@ namespace SIM7020E {
         if (response[response.length - 1] == OK) {
             let return_code = OK
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
-                let return_code = response[response.length - 2]
+                return_code = response[response.length - 2]
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
                 logUSB(RESPONSE, response[response.length - 2])
@@ -314,7 +314,7 @@ namespace SIM7020E {
         if (response[response.length - 1] == OK) {
             let return_code = OK
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
-                let return_code = response[response.length - 2]
+                return_code = response[response.length - 2]
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
                 logUSB(RESPONSE, response[response.length - 2])
@@ -340,7 +340,7 @@ namespace SIM7020E {
                 }
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
-                let return_code = contents
+                return_code = contents
             }
             return return_code
         }
@@ -363,7 +363,7 @@ namespace SIM7020E {
                 }
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
-                let return_code = contents
+                return_code = contents
             }
             return return_code
         }
@@ -386,7 +386,7 @@ namespace SIM7020E {
                 }
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
-                let return_code = contents
+                return_code = contents
             }
             return return_code
         }
@@ -412,7 +412,7 @@ namespace SIM7020E {
                 }
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
-                let return_code = contents
+                return_code = contents
             }
             return return_code
         }
@@ -440,7 +440,7 @@ namespace SIM7020E {
                 }
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
-                let return_code = contents
+                return_code = contents
             }
             return return_code
         }
@@ -464,7 +464,7 @@ namespace SIM7020E {
                 }
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
-                let return_code = contents
+                return_code = contents
             }
             return return_code
         }
@@ -500,7 +500,7 @@ namespace SIM7020E {
                 }
             }
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
-                let return_code = contents
+                return_code = contents
             }
             return return_code
         }
