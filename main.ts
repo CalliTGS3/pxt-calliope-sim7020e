@@ -508,6 +508,22 @@ namespace SIM7020E {
     }
 
     //% block
+    export function PowerOn(dp: DigitalPin) {
+        pins.digitalWritePin(dp, 1)
+        basic.pause(2000)
+        pins.digitalWritePin(dp, 0)
+        basic.pause(2000)
+        pins.digitalWritePin(dp, 1)
+        basic.pause(2000)
+    }
+
+    //% block
+    export function PowerOff(dp: DigitalPin) {
+        pins.digitalWritePin(dp, 0)
+        basic.pause(3000)
+    }
+
+    //% block
     export function enableModemDebug(debug: boolean = false): void {
         MODEM_DEBUG = debug;
         modem.enableDebug(MODEM_DEBUG)
