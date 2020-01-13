@@ -99,8 +99,28 @@ namespace SIM7020E {
     */
     //% block
     export function setPhoneFunctionality(fun: number) {
-        let command = fun;
+        let command = fun.toString();
         let response = modem.sendAT('+CFUN=' + command)
+        if (response[response.length - 1] == OK) {
+            let return_code = OK
+            if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
+                return_code = response[response.length - 2]
+            }
+            if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_USB) {
+                logUSB(RESPONSE, response[response.length - 2])
+            }
+            return return_code
+        }
+        return ERROR
+    }
+
+    /*
+    * "AT+CREVHEX" command set output data format: 0:RAW, 1,HEX
+    */
+    //% block
+    export function setOutputDataFormat(format: number) {
+        let command = format.toString();
+        let response = modem.sendAT('+CREVHEX=' + command)
         if (response[response.length - 1] == OK) {
             let return_code = OK
             if (AT_DEBUG == SIM7020E_AT_DEBUG.AT_DEBUG_RETURN) {
