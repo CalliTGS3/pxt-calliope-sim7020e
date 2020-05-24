@@ -140,7 +140,7 @@ namespace SIM7020E {
     /*
     * "AT+GMR" command reports the Revision Identification of Software Release
     */
-    //% block
+    //% blockId="getModemSoftwareRevision" block="Ermittle Softwareversion"
     //% advanced=true
     export function getModemSoftwareRevision(): string {
         return sendATCommand('+GMR');
