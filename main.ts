@@ -262,15 +262,18 @@ namespace SIM7020E {
     /*
     * "AT+CMQCON=" command sends MQTT connection packet.
     */
-    //% blockId="connectMQTT" block="Verbinde MQTT Instanz über MQTT-Verbindung %mqtt_id | als Client %client_id"
-    export function connectMQTT(mqtt_id: number, client_id: string): string {
+    //% blockId="connectMQTT" block="Verbinde MQTT Instanz über MQTT-Verbindung %mqtt_id | als Client %client_id | mit Username %username | und Passwort %password"
+    export function connectMQTT(mqtt_id: number, client_id: string, username: string, password:string): string {
         if (client_id == '') return ERROR;
         let mqtt_version = 3
         let mqtt_keepalive = 60
         let mqtt_cleansession = 1 // MUST 1 for ThingSpeak!
         let mqtt_will_flag = 0
-        let command = mqtt_id.toString() + ',' + mqtt_version + ',"' + client_id + '",' + mqtt_keepalive + ',' + mqtt_cleansession + ',' + mqtt_will_flag
-        return sendATCommand('+CMQCON=' + command);
+	let mqtt_will_options = ''
+        let command = mqtt_id.toString() + ',' + mqtt_version + ',"' + client_id + '",' + mqtt_keepalive + ',' + mqtt_cleansession
+        command = command + ',' + mqtt_will_flag + ',' + mqtt_will_options
+	command = command + ',' + username + ',' + password    
+	return sendATCommand('+CMQCON=' + command);
     }
 
     /*
