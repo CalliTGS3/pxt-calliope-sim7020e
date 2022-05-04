@@ -271,8 +271,7 @@ namespace SIM7020E {
         let mqtt_will_flag = 0
 	let mqtt_will_options = ''
         let command = mqtt_id.toString() + ',' + mqtt_version + ',"' + client_id + '",' + mqtt_keepalive + ',' + mqtt_cleansession
-        command = command + ',' + mqtt_will_flag + ',' + mqtt_will_options
-	command = command + ',' + username + ',' + password    
+        command = command + ',' + mqtt_will_flag + ',"' + username + '","' + password + '""    
 	return sendATCommand('+CMQCON=' + command);
     }
 
