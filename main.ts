@@ -19,7 +19,7 @@ enum SIM7020E_AT_DEBUG {
 
 //% weight=20 color=#0fbc11 icon="\uf09e"
 namespace SIM7020E {
-    const THINGSPEAK_MQTT = 'mqtt.thingspeak.com';
+    const THINGSPEAK_MQTT = 'mqtt3.thingspeak.com';
     const THINGSPEAK_MQTT_PORT = 1883;
     const RESPONSE = 'RESPONSE:'
     const ERROR = 'ERROR';
@@ -287,9 +287,9 @@ namespace SIM7020E {
     /*
     * "AT+CMQPUB=" command sends MQTT publish packet.
     */
-    //% blockId="publishMQTT" block="Publiziere MQTT Daten an Thingspeak über MQTT-Verbindung %mqtt_id | Kanal %channel | API Key %write_api_key | Feld 1 %n1 | Feld 2 %n2 | Feld 3 %n3 | Feld 4 %n4 | Feld 5 %n5 | Feld 6 %n6 | Feld 7 %n7 | Feld 8 %n8 | Status %status"
-    export function publishMQTT(mqtt_id: number, channel: string, write_api_key: string, n1: number, n2: number, n3: number, n4: number, n5: number, n6: number, n7: number, n8: number, status: string): string {
-        if ((channel == "") || (write_api_key == "")) return ERROR;
+    //% blockId="publishMQTT" block="Publiziere MQTT Daten an Thingspeak über MQTT-Verbindung %mqtt_id | Kanal %channel | Feld 1 %n1 | Feld 2 %n2 | Feld 3 %n3 | Feld 4 %n4 | Feld 5 %n5 | Feld 6 %n6 | Feld 7 %n7 | Feld 8 %n8 | Status %status"
+    export function publishMQTT(mqtt_id: number, channel: string, n1: number, n2: number, n3: number, n4: number, n5: number, n6: number, n7: number, n8: number, status: string): string {
+        if (channel == "") return ERROR;
         let message = ""
         message = "\"field1=" + n1 + "&"
         message = "" + message + "field2=" + n2 + "&"
@@ -301,7 +301,7 @@ namespace SIM7020E {
         message = "" + message + "field8=" + n8 + "&"
         message = "" + message + "status=" + status + "\""
         let messagelen = message.length - 2
-        let topic = "\"channels/" + channel + "/publish/" + write_api_key + "\""
+        let topic = "\"channels/" + channel + "/publish\""
         let command = "" + topic + ",0,0,0," + messagelen + "," + message
         return sendATCommand('+CMQPUB=' + mqtt_id + ',' + command);
     }
@@ -311,25 +311,44 @@ namespace SIM7020E {
     */
     //% blockId="connectNBIOT" block="Verbinde SIM7020e mit Band %band | PDPType %pdptype | APN %apn | Netzwerk %network"
     export function connectNBIOT(band: number, pdptype: string, apn: string, network: string): string {
-        if (getModemSoftwareRevision() != ERROR) {
+        let error = 0
+        if (getModemSoftwareRevision() == ERROR) {
+            error = 1
+        }
+        if (error == 0) {
             basic.pause(100)
-            if (setMobileOperationBand(band) != ERROR) {
-                basic.pause(100)
-                if (setPhoneFunctionality(0) != ERROR) {
-                    basic.pause(100)
-                    if (setDefaultPSDConnectionSettings(pdptype, apn) != ERROR) {
-                        basic.pause(100)
-                        if (setPhoneFunctionality(1) != ERROR) {
-                            basic.pause(100)
-                            if (registerNetwork(1, 2, network, 9) != ERROR) {
-                                return OK;
-                            }
-                        }
-                    }
-                }
+            if (SIM7020E.setMobileOperationBand(band) == ERROR) {
+                error = 2
             }
         }
-        return ERROR;
+        if (error == 0) {
+            basic.pause(100)
+            if (setPhoneFunctionality(0) == ERROR) {
+                error = 3
+            }
+        }
+        if (error == 0) {
+            basic.pause(100)
+            if (setDefaultPSDConnectionSettings(pdptype, apn) == ERROR) {
+                error = 4
+            }
+        }
+        if (error == 0) {
+            basic.pause(100)
+            if (setPhoneFunctionality(1) == ERROR) {
+                error = 5
+            }
+        }
+        if (error == 0) {
+            basic.pause(100)
+            if (registerNetwork(1, 2, network) == ERROR) {
+                error = 6
+            }
+        }
+        if (error > 0)
+            return 'ERROR' + error.toString();
+        else
+            return OK
     }
 
     //% blockId="powerOn" block="Schalte SIM7020e ein am Pin %dp"
